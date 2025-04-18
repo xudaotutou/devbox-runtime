@@ -76,10 +76,11 @@ jobs:
           template_json=$(bash script/get_template_config_json.sh "${{ matrix.build_target }}")
           template_repo_json=$(bash script/get_template_repo_json.sh "${{ matrix.build_target }}")
           sql=$(bash script/generate_template_sql.sh $image_name $template_json $template_repo_json)
-          # 保存 SQL 到文件
-          mkdir -p /sql/templates/
-          build_target_filename=$(echo "${{ matrix.build_target }}" | sed 's/\//_/g')
-          echo "$sql" > "/sql/templates/${{ build_target_filename }}.sql.tmp"
+          echo "sql=$sql" >> $GITHUB_OUTPUT
+      - name: Save SQL to file
+        run: |
+          echo "Saving SQL to file"
+          bash script/save_sql.sh "${{ matrix.build_target }}" $sql
       - name: Build and push image
         run: |
           echo "building image $image_name"
